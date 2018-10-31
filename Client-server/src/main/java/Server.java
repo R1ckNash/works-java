@@ -3,26 +3,31 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server {
+    public static int PORT;
 
     public static void main(String[] args){
+
         Logger logger = Logger.getLogger(Server.class.getName());
         ServerSocket server = null;
         String clientName;
 
+        logger.info("Which PORT to listen?");
+        Scanner scanner = new Scanner(System.in);
+        PORT = scanner.nextInt();
+
         try {
-
-            server = new ServerSocket(8080);
-
+            server = new ServerSocket(PORT);
             Socket client = server.accept();
-
             logger.info("Connection accepted.");
 
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             logger.info("DataOutputStream created");
+
             DataInputStream in = new DataInputStream(client.getInputStream());
             logger.info("DataInputStream created");
             clientName = in.readUTF();
@@ -30,14 +35,12 @@ public class Server {
             while(!client.isClosed()){
 
                 logger.info("Server reading from channel");
-
                 String entry = in.readUTF();
 
                 logger.log(Level.INFO,"READ from {0}. ", clientName + " message - " + entry);
                 logger.info("Server try writing to channel");
 
                 if (entry.equalsIgnoreCase("quit")){
-
                     logger.info("Client initialize connections suicide ...");
                     break;
                 }
@@ -48,7 +51,6 @@ public class Server {
 
             logger.info("Client disconnected");
             logger.info("Closing connections & channels.");
-
 
             in.close();
             out.close();

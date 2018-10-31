@@ -1,29 +1,31 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class Client {
+    public static int PORT;
 
     public static void main(String[] args) throws InterruptedException {
         Logger logger = Logger.getLogger(Server.class.getName());
         Socket socket = null;
         String clientName;
 
-        try {
+        logger.info("Which PORT to connect?");
+        Scanner scanner = new Scanner(System.in);
+        PORT = scanner.nextInt();
 
-            socket = new Socket("localhost", 8080);
+        try {
+            socket = new Socket("localhost", PORT);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             DataInputStream in = new DataInputStream(socket.getInputStream());
 
-
-            logger.info("Client connected to socket.");
-            logger.info("Client writing channel = out & reading channel = in initialized.");
-            logger.info("Enter your name:");
+            logger.info("Client connected to socket." + "\n" + "Writing channel and reading channel - initialized " + "\n" + "Enter your name:");
 
             clientName = br.readLine();
             out.writeUTF(clientName);
@@ -32,7 +34,6 @@ public class Client {
             while(!socket.isOutputShutdown()){
 
                 logger.log(Level.INFO,"Client {0}.", clientName + " start writing in chat...");
-
                 String clientCommand = br.readLine();
 
                 out.writeUTF(clientCommand);
@@ -42,19 +43,17 @@ public class Client {
                 Thread.sleep(1000);
 
                     if(clientCommand.equalsIgnoreCase("quit")){
-
                         logger.info("Client disconnect from channel");
                         Thread.sleep(2000);
                         break;
                     }
+
                 logger.info("Client sent message & start waiting for data from server...");
                 Thread.sleep(2000);
-
-                logger.info("reading...");
                 String readMessage = in.readUTF();
                 logger.info(readMessage);
-
             }
+
             logger.info("Closing connections & channels on clientSide - DONE.");
 
         } catch (UnknownHostException e) {
