@@ -1,75 +1,66 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Client {
 
     public static void main(String[] args) throws InterruptedException {
+        Logger logger = Logger.getLogger(Server.class.getName());
         Socket socket = null;
         String clientName;
 
         try {
 
-            socket = new Socket("localhost", 3345);
+            socket = new Socket("localhost", 8080);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             DataInputStream in = new DataInputStream(socket.getInputStream());
 
 
-            System.out.println("Client connected to socket.");
-            System.out.println();
-            System.out.println("Client writing channel = out & reading channel = in initialized.");
-            System.out.println("Enter your name:");
+            logger.info("Client connected to socket.");
+            logger.info("Client writing channel = out & reading channel = in initialized.");
+            logger.info("Enter your name:");
+
             clientName = br.readLine();
             out.writeUTF(clientName);
             out.flush();
 
             while(!socket.isOutputShutdown()){
 
-                    System.out.println("Client start writing in channel...");
-                    Thread.sleep(1000);
+                logger.log(Level.INFO,"Client {0}.", clientName + " start writing in chat...");
 
-                    System.out.println("Client " + clientName + " start writing in chat...");
+                String clientCommand = br.readLine();
 
-                    String clientCommand = br.readLine();
+                out.writeUTF(clientCommand);
+                out.flush();
 
-                    out.writeUTF(clientCommand);
-                    out.flush();
-
-                    System.out.println("Client sent message " + clientCommand + " to server.");
-                    Thread.sleep(1000);
+                logger.log(Level.INFO,"Client {0}.", clientName + " sent message:  << " + clientCommand + " >> to server.");
+                Thread.sleep(1000);
 
                     if(clientCommand.equalsIgnoreCase("quit")){
 
-                        System.out.println("Client disconnect from channel");
+                        logger.info("Client disconnect from channel");
                         Thread.sleep(2000);
-
-
-                        System.out.println("reading...");
-                        String readMessage = in.readUTF();
-                        System.out.println(readMessage);
-
-
                         break;
                     }
+                logger.info("Client sent message & start waiting for data from server...");
+                Thread.sleep(2000);
 
-                    System.out.println("Client sent message & start waiting for data from server...");
-                    Thread.sleep(2000);
-
-
-                    System.out.println("reading...");
-                    String readMessage = in.readUTF();
-                    System.out.println(readMessage);
+                logger.info("reading...");
+                String readMessage = in.readUTF();
+                logger.info(readMessage);
 
             }
-            System.out.println("Closing connections & channels on clientSide - DONE.");
+            logger.info("Closing connections & channels on clientSide - DONE.");
 
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }finally{
             IoUtils.closeQuietly(socket);
         }
