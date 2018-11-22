@@ -1,7 +1,12 @@
+package Main_task;
+
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class Main {
     public static void main(String[] args) throws Exception {
+        Logger logger = Logger.getLogger(Main.class.getName());
         int size1 = 500;
         int size2 = 1000;
 
@@ -23,17 +28,15 @@ class Main {
         UsualMatrix par = parallelMatrixProduct.product(matrix1, matrix2);
         long finish = System.nanoTime();
         float timeConsumedMillis = (float) ((finish - start) * 1.0 / 1000000000);
-        System.out.println("Multithreaded: " + timeConsumedMillis + "s");
+        logger.log(Level.INFO,"Multithreaded: {0}.",  timeConsumedMillis + "s");
 
 
         start = System.nanoTime();
         matrix1.product(matrix2);
         finish = System.nanoTime();
         timeConsumedMillis = (float) ((finish - start) * 1.0 / 1000000000);
-        System.out.println("Single-flow: " + timeConsumedMillis + "s");
-        //System.out.println(matrix1);
-
-        System.out.println(matrix1.equals(par));
+        logger.log(Level.INFO,"Single-flow: {0}.",  timeConsumedMillis + "s");
+        logger.log(Level.INFO,"Matrix the same - {0}.",matrix1.equals(par));
 
 
     }

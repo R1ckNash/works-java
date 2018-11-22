@@ -1,8 +1,20 @@
+package Main_task;
+
+import Main_task.Main;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class ParallelMatrixProduct {
 
     private class Multiply extends Thread {
-        private int firstRow, lastRow, sizeRow;
-        private UsualMatrix first, second, result;
+        private int firstRow;
+        private int lastRow;
+        private int sizeRow;
+
+        private UsualMatrix first;
+        private UsualMatrix second;
+        private UsualMatrix result;
 
         Multiply(int firstIndexRow, int secondIndexRow, UsualMatrix first, UsualMatrix second, UsualMatrix result) {
             this.firstRow = firstIndexRow;
@@ -31,6 +43,7 @@ public class ParallelMatrixProduct {
 
 
     private int numberThreads;
+    Logger logger = Logger.getLogger(Main.class.getName());
 
     ParallelMatrixProduct(int numberOfThreads) {
         numberThreads = numberOfThreads;
@@ -62,7 +75,7 @@ public class ParallelMatrixProduct {
                 thread.join();
             }
         } catch (InterruptedException e) {
-            System.out.println("Interrupted");
+            logger.log(Level.INFO,"Interrupted");
         }
 
         return result;

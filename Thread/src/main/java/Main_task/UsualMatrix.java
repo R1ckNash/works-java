@@ -1,3 +1,5 @@
+package Main_task;
+
 public class UsualMatrix {
     private int[][] matrix;
 
