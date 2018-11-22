@@ -19,38 +19,42 @@ public class Client {
         PORT = scanner.nextInt();
 
         try {
-            socket = new Socket("localhost", PORT);
+            socket = new Socket("93.100.95.192", PORT);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             DataInputStream in = new DataInputStream(socket.getInputStream());
 
-            logger.info("Client connected to socket." + "\n" + "Writing channel and reading channel - initialized " + "\n" + "Enter your name:");
+            logger.info("Client connected to socket." + "\n" + "Writing channel and reading channel - initialized ");
 
-            clientName = br.readLine();
-            out.writeUTF(clientName);
-            out.flush();
+            String readMessage = in.readUTF();
+            logger.info(readMessage);
 
             while(!socket.isOutputShutdown()){
 
-                logger.log(Level.INFO,"Client {0}.", clientName + " start writing in chat...");
                 String clientCommand = br.readLine();
+
+                if(clientCommand.equalsIgnoreCase("@name")) {
+                    clientName = br.readLine();
+                    out.writeUTF(clientName);
+                    out.flush();
+                }
+
 
                 out.writeUTF(clientCommand);
                 out.flush();
 
-                logger.log(Level.INFO,"Client {0}.", clientName + " sent message:  << " + clientCommand + " >> to server.");
+                logger.log(Level.INFO,"Client sent message:  << " + clientCommand + " >> to server.");
                 Thread.sleep(1000);
 
-                    if(clientCommand.equalsIgnoreCase("quit")){
+                    if(clientCommand.equalsIgnoreCase("@quit")){
                         logger.info("Client disconnect from channel");
                         Thread.sleep(2000);
                         break;
                     }
 
-                logger.info("Client sent message & start waiting for data from server...");
                 Thread.sleep(2000);
-                String readMessage = in.readUTF();
+                readMessage = in.readUTF();
                 logger.info(readMessage);
             }
 
